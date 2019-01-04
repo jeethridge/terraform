@@ -4,7 +4,7 @@ resource "azurerm_resource_group" "tf" {
   location = "East US"
 }
 
-# Create a virtual network within the resource group
+# Create a virtual network within the resource group using the vnet module
 resource "azurerm_virtual_network" "tf-nw" {
   name                = "terraform-network"
   resource_group_name = "${azurerm_resource_group.tf.name}"
@@ -13,11 +13,23 @@ resource "azurerm_virtual_network" "tf-nw" {
 }
 
 # Define a subnet for the network
-resource "azurerm_subnet" "subnet1" {
-  name                 = "subnet1"
+resource "azurerm_subnet" "tf-subnet" {
+  name                 = "terraform-subnet"
   virtual_network_name = "${azurerm_virtual_network.tf-nw.name}"
   resource_group_name  = "${azurerm_resource_group.tf.name}"
-  address_prefix       = "10.10.10.0/24"
+  address_prefix       = "10.0.1.0/24"
+}
+
+# Create a public IP for the server to use
+resource "azurerm_public_ip" "tf-public-ip" {
+  name                         = "terraform-public-ip"
+  location                     = "East US"
+  resource_group_name          = "${azurerm_resource_group.tf.name}"
+  public_ip_address_allocation = "dynamic"
+
+  tags {
+    environment = "dev"
+  }
 }
 
 # Create a network security group within the resource group
