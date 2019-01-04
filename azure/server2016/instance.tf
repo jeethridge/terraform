@@ -11,8 +11,10 @@ resource "azurerm_network_interface" "nic-main" {
 
   ip_configuration {
     name                          = "${var.prefix}-ip"
-    subnet_id                     = "${azurerm_subnet.subnet1.id}"
-    private_ip_address_allocation = "dynamic"
+    subnet_id                     = "${azurerm_subnet.tf-subnet.id}"
+    private_ip_address_allocation = "static"
+    private_ip_address = "10.0.1.10"
+    public_ip_address_id = "${azurerm_public_ip.tf-public-ip.id}"
   }
 }
 
@@ -44,11 +46,11 @@ resource "azurerm_virtual_machine" "main" {
   }
   os_profile {
     computer_name  = "${var.prefix}-host"
-    admin_username = "administrator"
+    admin_username = "localadmin"
     admin_password = "${var.admin_password}"
   }
-  os_profile_linux_config {
-    disable_password_authentication = false
+  os_profile_windows_config {
+        enable_automatic_upgrades = false
   }
   tags {
     environment = "dev"
